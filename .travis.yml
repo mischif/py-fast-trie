@@ -1,0 +1,18 @@
+language: python
+
+sudo: false
+
+python:
+    - "2.7"
+    - "3.6"
+    - "3.7"
+    - "3.8"
+    - "pypy"
+    - "pypy3"
+
+install: pip install .[test]
+
+script: make ci-test
+
+after_success:
+    - codecov -X gcov
