@@ -47,6 +47,8 @@ setup(
 
 	package_data={"py_fast_trie": ["VERSION"]},
 
+	install_requires=["py-hopscotch-dict", "sortedcontainers"],
+	
 	setup_requires=["pytest-runner"],
 
 	tests_require=["hypothesis", "hypothesis-pytest", "pytest", "pytest-cov"],

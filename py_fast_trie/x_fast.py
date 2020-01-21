@@ -226,7 +226,17 @@ class XFastTrie(object):
 					result = candidate
 		return result
 
-	def add(self, value):
+	def clear(self):
+		"""
+		Empty the trie of all values
+		"""
+		self._level_tables = self._make_level_tables(self._maxlen)
+		self._root = TrieNode(None, False)
+		self._count = 0
+		self._min = None
+		self._max = None
+
+	def insert(self, value):
 		"""
 		Add the given value to the trie
 
@@ -331,16 +341,6 @@ class XFastTrie(object):
 				root_right.parent = self._root
 
 		self._count += 1
-
-	def clear(self):
-		"""
-		Empty the trie of all values
-		"""
-		self._level_tables = self._make_level_tables(self._maxlen)
-		self._root = TrieNode(None, False)
-		self._count = 0
-		self._min = None
-		self._max = None
 
 	def predecessor(self, value):
 		"""
@@ -482,11 +482,12 @@ class XFastTrie(object):
 
 	def __gt__(self, value):
 		value = self._to_int(value, self._maxlen)
-		return self.successor(value)
+		result = self.successor(value)
+		return result.value if result is not None else result
 
 	def __iadd__(self, value):
 		value = self._to_int(value, self._maxlen)
-		self.add(value)
+		self.insert(value)
 		return self
 
 	def __isub__(self, value):
@@ -496,4 +497,5 @@ class XFastTrie(object):
 
 	def __lt__(self, value):
 		value = self._to_int(value, self._maxlen)
-		return self.predecessor(value)
+		result = self.predecessor(value)
+		return result.value if result is not None else result

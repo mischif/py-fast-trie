@@ -17,7 +17,11 @@ from hypothesis.strategies import integers, lists
 from hypothesis.stateful import RuleBasedStateMachine, invariant, precondition, rule
 
 from py_fast_trie import XFastTrie
-from test import invalid_trie_entry, valid_int_entries, valid_trie_entries, valid_trie_entry
+from test import (invalid_trie_entry,
+				  max_trie_entry_size,
+				  valid_int_entries,
+				  valid_trie_entries,
+				  valid_trie_entry)
 
 
 def to_bytes(val):
@@ -33,7 +37,7 @@ def to_bytes(val):
 	return pack(fmt, val)
 
 
-@given(integers(min_value=0, max_value=maxsize.bit_length()))
+@given(integers(min_value=0, max_value=max_trie_entry_size))
 def test_make_level_tables(depth):
 	assert len(XFastTrie._make_level_tables(depth)) == depth
 
@@ -41,33 +45,31 @@ def test_make_level_tables(depth):
 @given(valid_trie_entry)
 def test_to_int(value):
 	if isinstance(value, int):
-		assert XFastTrie._to_int(value, maxsize.bit_length() + 1) == value
+		assert XFastTrie._to_int(value, max_trie_entry_size) == value
 
 	elif isinstance(value, bytes):
 		value_int = unpack(">Q", value.rjust((maxsize.bit_length() + 1) / 8, b'\x00'))[0]
-		assert XFastTrie._to_int(value, maxsize.bit_length() + 1) == value_int
+		assert XFastTrie._to_int(value, max_trie_entry_size) == value_int
 
 
 @given(invalid_trie_entry)
 def test_to_int_exceptions(value):
 	if isinstance(value, int):
 		with pytest.raises(RuntimeError):
-			XFastTrie._to_int(value, maxsize.bit_length() + 1)
+			XFastTrie._to_int(value, max_trie_entry_size)
 
 	elif isinstance(value, bytes):
 		with pytest.raises(RuntimeError):
-			XFastTrie._to_int(value, maxsize.bit_length() + 1)
+			XFastTrie._to_int(value, max_trie_entry_size)
 
 	else:
 		with pytest.raises(RuntimeError):
-			XFastTrie._to_int(value, maxsize.bit_length() + 1)
+			XFastTrie._to_int(value, max_trie_entry_size)
 
 
-# @seed(187443009151877299492450020048527147164)
-# @seed(117986182881644931529007760579235784494)
 @given(valid_trie_entries, valid_int_entries)
 def test_get_closest_ancestor(entries, test_values):
-	t = XFastTrie()
+	t = XFastTrie(max_trie_entry_size)
 
 	for entry in entries:
 		t += entry
@@ -90,7 +92,7 @@ def test_get_closest_ancestor(entries, test_values):
 
 @given(valid_trie_entries, valid_int_entries)
 def test_get_closest_leaf(entries, test_values):
-	t = XFastTrie()
+	t = XFastTrie(max_trie_entry_size)
 
 	for entry in entries:
 		t += entry
@@ -114,7 +116,7 @@ def test_get_closest_leaf(entries, test_values):
 
 @given(valid_trie_entries, valid_int_entries)
 def test_predecessor(entries, test_values):
-	t = XFastTrie()
+	t = XFastTrie(max_trie_entry_size)
 
 	for entry in entries:
 		t += entry
@@ -123,7 +125,8 @@ def test_predecessor(entries, test_values):
 		pred = t < val
 
 		if pred is not None:
-			assert pred.value < val
+			assert pred < val
+			pred = t.predecessor(val)
 
 			if pred.succ is not None:
 				assert pred.succ.value >= val
@@ -131,7 +134,7 @@ def test_predecessor(entries, test_values):
 
 @given(valid_trie_entries, valid_int_entries)
 def test_successor(entries, test_values):
-	t = XFastTrie()
+	t = XFastTrie(max_trie_entry_size)
 
 	for entry in entries:
 		t += entry
@@ -140,14 +143,15 @@ def test_successor(entries, test_values):
 		succ = t > val
 
 		if succ is not None:
-			assert succ.value > val
+			assert succ > val
+			succ = t.successor(val)
 
 			if succ.pred is not None:
 				assert succ.pred.value <= val
 
 
 def test_successor_predecessor_empty_trie():
-	t = XFastTrie()
+	t = XFastTrie(max_trie_entry_size)
 
 	with pytest.raises(RuntimeError):
 		t.successor(0)
@@ -158,7 +162,7 @@ def test_successor_predecessor_empty_trie():
 
 @given(valid_trie_entries)
 def test_clear(entries):
-	t = XFastTrie()
+	t = XFastTrie(max_trie_entry_size)
 
 	for entry in entries:
 		t += entry
@@ -179,7 +183,7 @@ def test_clear(entries):
 class XFastStateMachine(RuleBasedStateMachine):
 	def __init__(self):
 		super(XFastStateMachine, self).__init__()
-		self.t = XFastTrie()
+		self.t = XFastTrie(max_trie_entry_size)
 
 	def teardown(self):
 		values = list(self.t._level_tables[-1])
@@ -249,7 +253,7 @@ class XFastStateMachine(RuleBasedStateMachine):
 						assert node.succ.value > node.value
 
 	@rule(val=valid_trie_entry)
-	def add_value(self, val):
+	def insert_value(self, val):
 		self.t += val
 
 	@rule(val=valid_trie_entry)
