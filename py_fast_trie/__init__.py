@@ -8,3 +8,4 @@
 ################################################################################
 
 from py_fast_trie.x_fast import XFastTrie
+from py_fast_trie.y_fast import YFastTrie
