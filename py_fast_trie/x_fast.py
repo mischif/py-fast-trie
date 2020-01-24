@@ -447,7 +447,7 @@ class XFastTrie(object):
 
 		:param value: (int) The value to find the successor for
 		:return: (TrieNode) The leaf with the smallest value strictly greater than the given value,
-							or None if the value is at most the value of the largest leaf
+							or None if the value is at least the value of the largest leaf
 		"""
 		value = self._to_int(value, self._maxlen)
 		node = self._get_closest_leaf(value)
@@ -461,16 +461,20 @@ class XFastTrie(object):
 			return node.succ if node.value <= value else node
 
 	@property
-	def count(self):
-		return self._count
+	def max(self):
+		return self._max.value
 
 	@property
-	def max(self):
+	def max_node(self):
 		return self._max
 
 	@property
 	def min(self):
-		return self._min
+		return self._min.value
+
+	@property
+	def min_node(self):
+		return self._min	
 
 	def __init__(self, max_length=(maxsize.bit_length() + 1)):
 		self._maxlen = max_length
@@ -494,6 +498,9 @@ class XFastTrie(object):
 		value = self._to_int(value, self._maxlen)
 		self.remove(value)
 		return self
+
+	def __len__(self):
+		return self._count
 
 	def __lt__(self, value):
 		value = self._to_int(value, self._maxlen)

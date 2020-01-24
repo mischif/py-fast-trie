@@ -167,18 +167,18 @@ def test_clear(entries):
 	for entry in entries:
 		t += entry
 
-	assert t.count > 0
-	assert t.min is not None
-	assert t.max is not None
+	assert len(t) > 0
+	assert t.min_node is not None
+	assert t.max_node is not None
 
 	t.clear()
 
 	for d in t._level_tables:
 		assert len(d) == 0
 
-	assert t.count == 0
-	assert t.min is None
-	assert t.max is None
+	assert len(t) == 0
+	assert t.min_node is None
+	assert t.max_node is None
 
 class XFastStateMachine(RuleBasedStateMachine):
 	def __init__(self):
@@ -193,23 +193,23 @@ class XFastStateMachine(RuleBasedStateMachine):
 
 	@invariant()
 	def valid_count(self):
-		assert self.t.count == len(self.t._level_tables[-1])
+		assert len(self.t) == len(self.t._level_tables[-1])
 
 	@invariant()
 	def valid_min(self):
-		if self.t.count > 0:
-			assert self.t.min.pred is None
+		if len(self.t) > 0:
+			assert self.t.min_node.pred is None
 
 			for leaf in self.t._level_tables[-1].values():
-				assert leaf is self.t.min or self.t.min.value < leaf.value
+				assert leaf is self.t.min_node or self.t.min < leaf.value
 
 	@invariant()
 	def valid_max(self):
-		if self.t.count > 0:
-			assert self.t.max.succ is None
+		if len(self.t) > 0:
+			assert self.t.max_node.succ is None
 
 			for leaf in self.t._level_tables[-1].values():
-				assert leaf is self.t.max or self.t.max.value > leaf.value
+				assert leaf is self.t.max_node or self.t.max > leaf.value
 
 	@invariant()
 	def valid_pointers(self):
