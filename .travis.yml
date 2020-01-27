@@ -10,6 +10,8 @@ python:
     - "pypy"
     - "pypy3"
 
+before_install: pip install hypothesis
+
 install: pip install .[test]
 
 script: make ci-test
