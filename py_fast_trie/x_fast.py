@@ -14,6 +14,11 @@ from sys import maxsize
 
 from py_hopscotch_dict import HopscotchDict
 
+try:
+	from future_builtins import map
+except ImportError:
+	pass
+
 
 class TrieNode(object):
 	def _get_leaf(self):
@@ -147,26 +152,26 @@ class XFastTrie(object):
 		"""
 		if isinstance(value, Integral):
 			if value.bit_length() > length:
-				raise RuntimeError()
+				raise ValueError(u"Value is too big to be stored in trie")
 			elif value < 0:
-				raise RuntimeError()
+				raise ValueError(u"Negative values cannot be stored in trie")
 			else:
 				return value
 
 		elif isinstance(value, bytes):
 			if len(value) * 8 > length:
-				raise RuntimeError()
+				raise ValueError(u"Value is too big to be stored in trie")
+
+			# Python 2
+			elif isinstance(value, str):
+				return sum(map(lambda t: ord(t[1]) << 8 * t[0], enumerate(reversed(value))))
+
+			# Python 3
 			else:
-				result = 0
-
-				for byte in value:
-					result <<= 8
-					result += ord(byte)
-
-				return result
+				return sum(map(lambda t: t[1] << 8 * t[0], enumerate(reversed(value))))
 
 		else:
-			raise RuntimeError()
+			raise TypeError(u"Only integers and byte sequences can be stored in trie")
 
 	def _get_closest_ancestor(self, value):
 		"""
@@ -327,7 +332,6 @@ class XFastTrie(object):
 					if node.right.value < value:
 						node.right = leaf_node
 
-
 		if self._root.left is None or self._root.left.leaf:
 			root_left = self._level_tables[0].get(0)
 			self._root.left = root_left or self._min
@@ -357,7 +361,7 @@ class XFastTrie(object):
 		# But if it could also happen because of some unconsidered edge case,
 		# make some noise so the edge case can be fixed
 		if node is None:
-			raise RuntimeError()
+			raise ValueError(u"No values exist in trie")
 		else:
 			return node.pred if node.value >= value else node
 
@@ -371,7 +375,7 @@ class XFastTrie(object):
 
 		# Error when trying to remove a value that hasn't been added
 		if value not in self._level_tables[-1]:
-			raise RuntimeError()
+			raise ValueError(u"Value does not exist in trie")
 		else:
 			node = self._level_tables[-1][value]
 			leaf_pred = node.pred
@@ -456,25 +460,49 @@ class XFastTrie(object):
 		# But if it could also happen because of some unconsidered edge case,
 		# make some noise so the edge case can be fixed
 		if node is None:
-			raise RuntimeError()
+			raise ValueError(u"No values exist in trie")
 		else:
 			return node.succ if node.value <= value else node
 
 	@property
 	def max(self):
+		"""
+		The maximum value in the trie
+
+		:return: (int) The maximum value in the trie,
+					   or None if the trie is empty
+		"""
 		return self._max.value
 
 	@property
 	def max_node(self):
+		"""
+		The node related to the maximum value in the trie
+
+		:return: (TrieNode) The maximum value in the trie,
+							or None if the trie is empty
+		"""
 		return self._max
 
 	@property
 	def min(self):
+		"""
+		The minimum value in the trie
+
+		:return: (int) The minimum value in the trie,
+					   or None if the trie is empty
+		"""
 		return self._min.value
 
 	@property
 	def min_node(self):
-		return self._min	
+		"""
+		The node related to the minimum value in the trie
+
+		:return: (TrieNode) The minimum value in the trie,
+							or None if the trie is empty
+		"""
+		return self._min
 
 	def __init__(self, max_length=(maxsize.bit_length() + 1)):
 		self._maxlen = max_length

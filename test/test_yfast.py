@@ -83,7 +83,7 @@ def test_merge_large_subtrees(values):
 
 @given(lists(valid_int_entry, min_size=((2 * max_trie_entry_size) + 1), max_size=((4 * max_trie_entry_size) - 1), unique=True))
 def test_split_subtree(values):
-	left_tree, right_tree = YFastTrie._split_subtree(SortedList(values), max_trie_entry_size)
+	left_tree, right_tree = YFastTrie._split_subtree(SortedList(values))
 
 	assert isinstance(left_tree, SortedList)
 	assert isinstance(right_tree, SortedList)
@@ -168,10 +168,10 @@ def test_successor(entries, test_values):
 def test_successor_predecessor_empty_trie():
 	t = YFastTrie(max_trie_entry_size)
 
-	with pytest.raises(RuntimeError):
+	with pytest.raises(ValueError):
 		t.successor(0)
 
-	with pytest.raises(RuntimeError):
+	with pytest.raises(ValueError):
 		t.predecessor(0)
 
 
@@ -230,7 +230,7 @@ class YFastStateMachine(RuleBasedStateMachine):
 	@invariant()
 	def valid_count(self):
 		tree_sizes = map(lambda t: len(t), self.t._subtrees.values())
-		assert len(self.t) == (0 if len(tree_sizes) == 0 else sum(tree_sizes))
+		assert len(self.t) == sum(tree_sizes)
 
 	@invariant()
 	def valid_min(self):
@@ -284,7 +284,7 @@ class YFastStateMachine(RuleBasedStateMachine):
 		if val not in self.t:
 			try:
 				self.t -= val
-			except RuntimeError:
+			except ValueError:
 				pass
 		else:
 			self.t -= val

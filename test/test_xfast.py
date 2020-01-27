@@ -7,6 +7,9 @@
 #       Released under version 3.0 of the Non-Profit Open Source License       #
 ################################################################################
 
+from __future__ import division
+
+from numbers import Integral
 from struct import pack, unpack
 from sys import maxsize
 
@@ -48,22 +51,22 @@ def test_to_int(value):
 		assert XFastTrie._to_int(value, max_trie_entry_size) == value
 
 	elif isinstance(value, bytes):
-		value_int = unpack(">Q", value.rjust((maxsize.bit_length() + 1) / 8, b'\x00'))[0]
+		value_int = unpack(">Q", value.rjust((maxsize.bit_length() + 1) // 8, b'\x00'))[0]
 		assert XFastTrie._to_int(value, max_trie_entry_size) == value_int
 
 
 @given(invalid_trie_entry)
 def test_to_int_exceptions(value):
-	if isinstance(value, int):
-		with pytest.raises(RuntimeError):
+	if isinstance(value, Integral):
+		with pytest.raises(ValueError):
 			XFastTrie._to_int(value, max_trie_entry_size)
 
 	elif isinstance(value, bytes):
-		with pytest.raises(RuntimeError):
+		with pytest.raises(ValueError):
 			XFastTrie._to_int(value, max_trie_entry_size)
 
 	else:
-		with pytest.raises(RuntimeError):
+		with pytest.raises(TypeError):
 			XFastTrie._to_int(value, max_trie_entry_size)
 
 
@@ -153,10 +156,10 @@ def test_successor(entries, test_values):
 def test_successor_predecessor_empty_trie():
 	t = XFastTrie(max_trie_entry_size)
 
-	with pytest.raises(RuntimeError):
+	with pytest.raises(ValueError):
 		t.successor(0)
 
-	with pytest.raises(RuntimeError):
+	with pytest.raises(ValueError):
 		t.predecessor(0)
 
 
@@ -261,7 +264,7 @@ class XFastStateMachine(RuleBasedStateMachine):
 		if val not in self.t:
 			try:
 				self.t -= val
-			except RuntimeError:
+			except ValueError:
 				pass
 		else:
 			self.t -= val
