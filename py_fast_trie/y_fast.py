@@ -42,40 +42,49 @@ class YFastTrie(object):
 		:param max_size: Maximum size the combined tree can be before splitting
 		:return: (tuple) The combined tree and None if both trees' elements are
 						 less than max_size, the tree with the smaller elements
-						 and the tree with the larger elemts otherwise
+						 and the tree with the larger elements otherwise
 		"""
 		if len(left_tree) + len(right_tree) <= max_size:
 			left_tree.update(right_tree)
 			result = (left_tree, None)
 		else:
-			final_size = (len(left_tree) + len(right_tree)) // 2
+			total_median = (len(left_tree) + len(right_tree)) // 2 - 1
+			if total_median < len(left_tree):
+				total_median = left_tree[total_median]
+			else:
+				total_median = right_tree[total_median - len(left_tree)]
 
-			if len(left_tree) > len(right_tree):
-				big_tree = left_tree
-				small_tree = right_tree
+			# Taking advantage of the fact the number of elements in a subtree can only
+			# be twice the bit length of the maximum element before splitting
+			median_rep = YFastTrie._calculate_representative(total_median, max_size // 2)
+
+			if median_rep <= max(left_tree):
+				from_tree = left_tree
+				to_tree = right_tree
 				side = -1
 			else:
-				big_tree = right_tree
-				small_tree = left_tree
+				from_tree = right_tree
+				to_tree = left_tree
 				side = 0
 
-			for _ in range(final_size - len(small_tree)):
-				small_tree.add(big_tree.pop(side))
+			while max(left_tree) > median_rep or min(right_tree) <= median_rep:
+				to_tree.add(from_tree.pop(side))
 
 			result = (left_tree, right_tree)
 
 		return result
 
 	@staticmethod
-	def _split_subtree(tree):
+	def _split_subtree(tree, max_length):
 		"""
 		Split a tree by its median element into two smaller trees
 
 		:param tree: The tree to split
+		:param max_length: The size of the largest possible element in the trie in bits
 		:return: (tuple) The tree with the smaller elements,
 						 and the tree with the larger elements
 		"""
-		median = tree.bisect_right(tree[len(tree) // 2])
+		median = tree.bisect_right(YFastTrie._calculate_representative(tree[len(tree) // 2], max_length))
 		return SortedList(tree.islice(stop=median)), SortedList(tree.islice(start=median))
 
 	def _get_value_subtree(self, value, create_subtree=False):
@@ -151,7 +160,7 @@ class YFastTrie(object):
 			self._partitions -= rep_node.value
 
 			# In with the new
-			for tree in self._split_subtree(subtree):
+			for tree in self._split_subtree(subtree, self._maxlen):
 				rep = self._calculate_representative(max(tree), self._maxlen)
 				self._partitions += rep
 				self._subtrees[rep] = tree

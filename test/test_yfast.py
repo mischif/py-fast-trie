@@ -14,7 +14,7 @@ from random import randint
 
 import pytest
 
-from hypothesis import given, note, seed
+from hypothesis import given
 from hypothesis.strategies import integers, lists
 from hypothesis.stateful import RuleBasedStateMachine, invariant, rule
 from sortedcontainers import SortedList
@@ -54,7 +54,6 @@ def test_merge_subtrees(values):
 		assert isinstance(new_left, SortedList)
 		assert isinstance(new_right, SortedList)
 		assert len(new_left) + len(new_right) == len(values)
-		assert max(new_left) < min(new_right)
 		assert YFastTrie._calculate_representative(max(new_left), max_trie_entry_size) < min(new_right)
 
 
@@ -67,9 +66,8 @@ def test_merge_large_subtrees(values):
 	new_left, new_right = YFastTrie._merge_subtrees(left_tree, right_tree, 2 * max_trie_entry_size)
 	assert isinstance(new_left, SortedList)
 	assert isinstance(new_right, SortedList)
-	assert len(new_left) <= len(new_right)
 	assert len(new_left) + len(new_right) == len(values)
-	assert max(new_left) < min(new_right)
+	assert YFastTrie._calculate_representative(max(new_left), max_trie_entry_size) < min(new_right)
 
 	split += 1
 	left_tree = SortedList(values.islice(stop=split))
@@ -77,13 +75,13 @@ def test_merge_large_subtrees(values):
 	new_left, new_right = YFastTrie._merge_subtrees(left_tree, right_tree, 2 * max_trie_entry_size)
 	assert isinstance(new_left, SortedList)
 	assert isinstance(new_right, SortedList)
-	assert len(new_right) <= len(new_left)
 	assert len(new_left) + len(new_right) == len(values)
-	assert max(new_left) < min(new_right)
+	assert YFastTrie._calculate_representative(max(new_left), max_trie_entry_size) < min(new_right)
+
 
 @given(lists(valid_int_entry, min_size=((2 * max_trie_entry_size) + 1), max_size=((4 * max_trie_entry_size) - 1), unique=True))
 def test_split_subtree(values):
-	left_tree, right_tree = YFastTrie._split_subtree(SortedList(values))
+	left_tree, right_tree = YFastTrie._split_subtree(SortedList(values), max_trie_entry_size)
 
 	assert isinstance(left_tree, SortedList)
 	assert isinstance(right_tree, SortedList)
