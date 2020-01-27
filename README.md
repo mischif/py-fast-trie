@@ -13,13 +13,13 @@ The interfaces of the X-fast and Y-fast tries are identical, the Y-fast trie is 
 	>>> from py_fast_trie import YFastTrie
 	>>> t = YFastTrie(max_length=32)		# The library defaults to the machine's word size
 	>>> for i in range(10, 20):
-	...     t += i							# Value insertion/removal operations have intuitive
-	>>> t.min								# shorthands
+	...     t += i					# Value insertion/removal operations have intuitive
+	>>> t.min					# shorthands
 	10
 	>>> t.max
 	19
-	>>> t < 14								# Predecessor/successor queries have intuitive
-	13										# shorthands
+	>>> t < 14					# Predecessor/successor queries have intuitive
+	13						# shorthands
 	>>> t > 0
 	10
 	>>> t -= 19
