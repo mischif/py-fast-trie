@@ -16,7 +16,7 @@ import pytest
 
 from hypothesis import given, note, seed
 from hypothesis.strategies import integers, lists
-from hypothesis.stateful import RuleBasedStateMachine, invariant, precondition, rule
+from hypothesis.stateful import RuleBasedStateMachine, invariant, rule
 from sortedcontainers import SortedList
 
 from py_fast_trie import YFastTrie

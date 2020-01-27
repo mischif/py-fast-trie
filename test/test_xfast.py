@@ -14,7 +14,7 @@ import pytest
 
 from hypothesis import given, note, seed
 from hypothesis.strategies import integers, lists
-from hypothesis.stateful import RuleBasedStateMachine, invariant, precondition, rule
+from hypothesis.stateful import RuleBasedStateMachine, invariant, rule
 
 from py_fast_trie import XFastTrie
 from test import (invalid_trie_entry,
