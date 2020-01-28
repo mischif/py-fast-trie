@@ -1,6 +1,12 @@
 py-fast-trie
 ============
 
+[![Travis](https://img.shields.io/travis/mischif/py-fast-trie.svg?style=for-the-badge)](https://travis-ci.org/mischif/py-fast-trie)
+[![Codecov](https://img.shields.io/codecov/c/github/mischif/py-fast-trie.svg?style=for-the-badge)](https://codecov.io/gh/mischif/py-fast-trie)
+[![Python Versions](https://img.shields.io/pypi/pyversions/py-fast-trie?style=for-the-badge)](https://pypi.org/project/py-fast-trie/)
+[![Package Version](https://img.shields.io/pypi/v/py-fast-trie?style=for-the-badge)](https://pypi.org/project/py-fast-trie/)
+[![License](https://img.shields.io/pypi/l/py-fast-trie?style=for-the-badge)](https://pypi.org/project/py-fast-trie/)
+
 py-fast-trie is a package that contains pure-Python implementations of an [X-fast Trie](https://en.wikipedia.org/wiki/X-fast_trie) and a [Y-fast trie](https://en.wikipedia.org/wiki/Y-fast_trie), as described in the [foundational paper](https://sci-hub.tw/10.1016/0020-0190%2883%2990075-3).
 
 The most notable benefit of X-fast and Y-fast tries compared to more common data structures such as binary search trees is that searches are log-logarithmic in the cardinality of the universe as opposed to being logarithmic in the number of elements in the structure itself; For reference if you needed to store 2^20 items with a potential maximum value of 2^32 - 1, finding a particular item would take 20 operations in a red/black or AVL tree, but only 5 with an X-fast or Y-fast trie.
