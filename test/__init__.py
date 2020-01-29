@@ -10,10 +10,9 @@
 from __future__ import division
 
 from functools import partial
-from os import getenv
 from sys import maxsize
 
-from hypothesis import HealthCheck, settings
+from hypothesis import settings
 from hypothesis.strategies import (binary,
 								   integers,
 								   lists,
@@ -23,10 +22,7 @@ from hypothesis.strategies import (binary,
 
 from py_fast_trie import XFastTrie
 
-settings.register_profile(u"ci", database=None, deadline=300, suppress_health_check=[HealthCheck.too_slow])
-settings.load_profile(getenv(u"HYPOTHESIS_PROFILE", u"default"))
-
-max_trie_entry_size = maxsize.bit_length() + 1 if getenv(u"HYPOTHESIS_PROFILE", u"default") == "ci" else 24
+max_trie_entry_size = maxsize.bit_length() + 1 if settings._current_profile == "ci" else 24
 max_trie_value = (2 ** max_trie_entry_size) - 1
 
 to_int = partial(XFastTrie._to_int, length=max_trie_entry_size)

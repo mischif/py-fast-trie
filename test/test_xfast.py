@@ -15,7 +15,7 @@ from sys import maxsize
 
 import pytest
 
-from hypothesis import given, note, seed
+from hypothesis import given, note, seed, settings
 from hypothesis.strategies import integers, lists
 from hypothesis.stateful import RuleBasedStateMachine, invariant, rule
 
@@ -287,4 +287,5 @@ class XFastStateMachine(RuleBasedStateMachine):
 		else:
 			self.t -= val
 
+XFastStateMachine.TestCase.settings = settings(max_examples=40)
 test_x_fast_trie = XFastStateMachine.TestCase

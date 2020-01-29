@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 ################################################################################
 #                                 py-fast-trie                                 #
 #          Python library for tries with different grades of fastness          #
@@ -5,20 +7,12 @@
 #       Released under version 3.0 of the Non-Profit Open Source License       #
 ################################################################################
 
-CI_OPTIONS="--cov-report xml --hypothesis-profile ci"
+from hypothesis import HealthCheck, settings
+from hypothesis.database import ExampleDatabase
 
-.PHONY: test ci-test build
-
-clean:
-	rm -rf .coverage coverage.xml .eggs/ .hypothesis/ .pytest_cache/ *egg-info/ dist/ build/
-	find . -name __pycache__ -exec rm -rf {} +
-	find . -name *.pyc -exec rm -rf {} +
-
-test:
-	python -B setup.py test
-
-ci-test:
-	python setup.py test --addopts ${CI_OPTIONS}
-
-build:
-	python setup.py build sdist bdist_wheel
+settings.register_profile(u"ci",
+						  database=ExampleDatabase(":memory:"),
+						  deadline=None,
+						  max_examples=1000,
+						  stateful_step_count=200,
+						  suppress_health_check=[HealthCheck.too_slow])

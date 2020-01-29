@@ -14,7 +14,7 @@ from random import randint
 
 import pytest
 
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis.strategies import integers, lists
 from hypothesis.stateful import RuleBasedStateMachine, invariant, rule
 from sortedcontainers import SortedList
@@ -302,4 +302,5 @@ class YFastStateMachine(RuleBasedStateMachine):
 		else:
 			self.t -= val
 
+YFastStateMachine.TestCase.settings = settings(max_examples=500)
 test_y_fast_trie = YFastStateMachine.TestCase
