@@ -14,20 +14,27 @@ The most notable benefit of X-fast and Y-fast tries compared to more common data
 Usage
 -----
 
-The interfaces of the X-fast and Y-fast tries are identical, the Y-fast trie is used here as an example
+The interfaces of the X-fast and Y-fast tries are identical, the Y-fast trie is used here as an example.
 
 	>>> from py_fast_trie import YFastTrie
 	>>> t = YFastTrie(max_length=32)		# The library defaults to the machine's word size
-	>>> for i in range(10, 20):
+	>>> for i in range(10, 13):
 	...     t += i					# Value insertion/removal operations have intuitive
 	>>> t.min					# shorthands
 	10
-	>>> t.max
-	19
-	>>> t < 14					# Predecessor/successor queries have intuitive
-	13						# shorthands
+	>>> t += b'\x0d'				# The library can handle byte strings less than the
+	>>> t.max					# max length by treating them as integers
+	12
+	>>> for val in t:
+	...     print val
+	10
+	11
+	12
+	13
+	>>> t < 12					# Predecessor/successor queries have intuitive
+	11						# shorthands
 	>>> t > 0
 	10
-	>>> t -= 19
-	>>> t > 19
+	t -= 13
+	>>> t > 12
 	>>>
