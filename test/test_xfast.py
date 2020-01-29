@@ -22,7 +22,9 @@ from hypothesis.stateful import RuleBasedStateMachine, invariant, rule
 from py_fast_trie import XFastTrie
 from test import (invalid_trie_entry,
 				  max_trie_entry_size,
+				  max_trie_value,
 				  valid_int_entries,
+				  valid_int_entry,
 				  valid_trie_entries,
 				  valid_trie_entry)
 
@@ -182,6 +184,22 @@ def test_clear(entries):
 	assert len(t) == 0
 	assert t.min_node is None
 	assert t.max_node is None
+
+
+@given(lists(valid_int_entry, min_size=0, max_size=max_trie_value, unique=True))
+def test_iter(entries):
+	t = XFastTrie(max_trie_entry_size)
+
+	for entry in entries:
+		t += entry
+
+	entries = sorted(entries)
+
+	for entry in t:
+		assert entry == entries.pop(0)
+
+	assert len(entries) == 0
+
 
 class XFastStateMachine(RuleBasedStateMachine):
 	def __init__(self):

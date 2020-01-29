@@ -326,6 +326,11 @@ class YFastTrie(object):
 		self.remove(value)
 		return self
 
+	def __iter__(self):
+		for rep in sorted(self._subtrees):
+			for value in self._subtrees[rep]:
+				yield value
+
 	def __len__(self):
 		return self._count
 

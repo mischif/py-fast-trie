@@ -214,6 +214,21 @@ def test_insert_with_split():
 	assert len(t._subtrees[small_rep]) == max_trie_entry_size + 1
 
 
+@given(lists(valid_int_entry, min_size=0, max_size=max_trie_value, unique=True))
+def test_iter(entries):
+	t = YFastTrie(max_trie_entry_size)
+
+	for entry in entries:
+		t += entry
+
+	entries = sorted(entries)
+
+	for entry in t:
+		assert entry == entries.pop(0)
+
+	assert len(entries) == 0
+
+
 class YFastStateMachine(RuleBasedStateMachine):
 	def __init__(self):
 		super(YFastStateMachine, self).__init__()

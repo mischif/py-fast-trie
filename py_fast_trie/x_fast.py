@@ -527,6 +527,12 @@ class XFastTrie(object):
 		self.remove(value)
 		return self
 
+	def __iter__(self):
+		node = self._min
+		while node is not None:
+			yield node.value
+			node = node.succ
+
 	def __len__(self):
 		return self._count
 
