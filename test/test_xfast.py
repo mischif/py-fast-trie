@@ -287,5 +287,5 @@ class XFastStateMachine(RuleBasedStateMachine):
 		else:
 			self.t -= val
 
-XFastStateMachine.TestCase.settings = settings(max_examples=40)
+XFastStateMachine.TestCase.settings = settings(max_examples=50)
 test_x_fast_trie = XFastStateMachine.TestCase

@@ -13,6 +13,6 @@ from hypothesis.database import ExampleDatabase
 settings.register_profile(u"ci",
 						  database=ExampleDatabase(":memory:"),
 						  deadline=None,
-						  max_examples=1000,
+						  max_examples=500,
 						  stateful_step_count=200,
 						  suppress_health_check=[HealthCheck.too_slow])

@@ -302,5 +302,5 @@ class YFastStateMachine(RuleBasedStateMachine):
 		else:
 			self.t -= val
 
-YFastStateMachine.TestCase.settings = settings(max_examples=500)
+YFastStateMachine.TestCase.settings = settings(max_examples=50)
 test_y_fast_trie = YFastStateMachine.TestCase
