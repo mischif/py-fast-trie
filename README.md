@@ -24,7 +24,7 @@ The interfaces of the X-fast and Y-fast tries are identical, the Y-fast trie is 
 	10
 	>>> t += b'\x0d'				# The library can handle byte strings less than the
 	>>> t.max					# max length by treating them as integers
-	12
+	13
 	>>> for val in t:
 	...     print val
 	10
