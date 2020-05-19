@@ -5,5 +5,10 @@
 #       Released under version 3.0 of the Non-Profit Open Source License       #
 ################################################################################
 
-[tool:pytest]
-addopts = -v -s --lf --cov=py_fast_trie --cov-report term-missing --cov-config setup.cfg
+[build-system]
+build-backend = "setuptools.build_meta"
+
+requires = [
+	"setuptools >= 43.0.0",
+	"wheel",
+	]

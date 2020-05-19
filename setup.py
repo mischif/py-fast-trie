@@ -9,11 +9,11 @@
 
 from io import open
 from os.path import abspath, dirname, join
-from setuptools import setup
+from setuptools import find_packages, setup
 
 
 package_root = abspath(dirname(__file__))
-module_root = join(package_root, "py_fast_trie")
+module_root = join(package_root, "src", "py_fast_trie")
 
 # Get the long description from the README file
 with open(join(package_root, "README.md"), encoding="utf-8") as desc:
@@ -29,7 +29,9 @@ setup(
 
 	version=package_version,
 
-	packages=["py_fast_trie"],
+	packages=find_packages(where="src"),
+
+	package_dir={"": "src"},
 
 	license="NPOSL-3.0",
 
@@ -53,8 +55,26 @@ setup(
 
 	tests_require=["hypothesis", "hypothesis-pytest", "pytest", "pytest-cov"],
 
+	zip_safe=False,
+
+	keywords=["x-fast", "y-fast", "trie", "data structures"],
+
 	extras_require={
 		"test": ["codecov"],
+		},
+
+	options={
+		"aliases": {
+			"test": "pytest",
+			},
+
+		"bdist_wheel": {
+			"universal": "1",
+			},
+
+		"metadata": {
+			"license_files": "LICENSE",
+			},
 		},
 
 	classifiers=[
@@ -74,6 +94,4 @@ setup(
 		"Topic :: Software Development :: Libraries",
 		"Topic :: Software Development :: Libraries :: Python Modules",
 		],
-
-	keywords="x-fast y-fast trie data structures",
 	)

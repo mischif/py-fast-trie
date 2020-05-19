@@ -5,6 +5,8 @@
 #       Released under version 3.0 of the Non-Profit Open Source License       #
 ################################################################################
 
+.POSIX:
+
 CI_OPTIONS="--cov-report xml --hypothesis-profile ci"
 
 .PHONY: test ci-test build
@@ -21,4 +23,4 @@ ci-test:
 	python setup.py test --addopts ${CI_OPTIONS}
 
 build:
-	python setup.py build sdist bdist_wheel
+	python -m pep517.build -sb .
