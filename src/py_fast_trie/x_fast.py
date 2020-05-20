@@ -369,7 +369,7 @@ class XFastTrie(object):
 		"""
 		Remove the given value from the trie
 
-		:param value: (int/bytes) The value to remove form the trie
+		:param value: (int/bytes) The value to remove from the trie
 		"""
 		value = self._to_int(value, self._maxlen)
 
