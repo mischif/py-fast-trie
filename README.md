@@ -1,8 +1,8 @@
 py-fast-trie
 ============
 
-[![Travis](https://img.shields.io/travis/mischif/py-fast-trie.svg?style=for-the-badge)](https://travis-ci.org/mischif/py-fast-trie)
-[![Codecov](https://img.shields.io/codecov/c/github/mischif/py-fast-trie.svg?style=for-the-badge)](https://codecov.io/gh/mischif/py-fast-trie)
+[![GitHub Workflow](https://img.shields.io/github/workflow/status/mischif/py-fast-trie/Pipeline?logo=github&style=for-the-badge)](https://github.com/mischif/py-fast-trie/actions)
+[![Codecov](https://img.shields.io/codecov/c/github/mischif/py-fast-trie?logo=codecov&style=for-the-badge)](https://codecov.io/gh/mischif/py-fast-trie)
 [![Python Versions](https://img.shields.io/pypi/pyversions/py-fast-trie?style=for-the-badge)](https://pypi.org/project/py-fast-trie/)
 [![Package Version](https://img.shields.io/pypi/v/py-fast-trie?style=for-the-badge)](https://pypi.org/project/py-fast-trie/)
 [![License](https://img.shields.io/pypi/l/py-fast-trie?style=for-the-badge)](https://pypi.org/project/py-fast-trie/)
