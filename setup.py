@@ -38,7 +38,7 @@ setup(
 	author="Jeremy Brown",
 	author_email="mischif@users.noreply.github.com",
 
-	python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, <4",
+	python_requires="~=3.6",
 
 	package_data={"py_fast_trie": ["VERSION"]},
 
@@ -61,10 +61,6 @@ setup(
 			"test": "pytest",
 			},
 
-		"bdist_wheel": {
-			"universal": "1",
-			},
-
 		"metadata": {
 			"license_files": "LICENSE",
 			},
@@ -77,8 +73,6 @@ setup(
 
 		"License :: OSI Approved :: Open Software License 3.0 (OSL-3.0)",
 
-		"Programming Language :: Python :: 2",
-		"Programming Language :: Python :: 2.7",
 		"Programming Language :: Python :: 3",
 		"Programming Language :: Python :: 3.6",
 		"Programming Language :: Python :: 3.7",

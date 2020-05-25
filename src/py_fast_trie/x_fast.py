@@ -162,11 +162,6 @@ class XFastTrie(object):
 			if len(value) * 8 > length:
 				raise ValueError(u"Value is too big to be stored in trie")
 
-			# Python 2
-			elif isinstance(value, str):
-				return sum(map(lambda t: ord(t[1]) << 8 * t[0], enumerate(reversed(value))))
-
-			# Python 3
 			else:
 				return sum(map(lambda t: t[1] << 8 * t[0], enumerate(reversed(value))))
 
