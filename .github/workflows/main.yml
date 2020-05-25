@@ -67,10 +67,3 @@ jobs:
           user: __token__
           password: ${{ secrets.TESTPYPI }}
           repository_url: https://test.pypi.org/legacy/
-
-  #     - name: Publish main packages
-  #       if: startsWith(github.event.ref, 'refs/tags')
-  #       uses: pypa/gh-action-pypi-publish@master
-  #       with:
-  #         user: __token__
-  #         password: ${{ secrets.pypi_password }}
