@@ -1,8 +1,9 @@
-name: Pipeline
+name: CI/CD
 
 on:
   push:
     branches: [master]
+    tags: [1.*, 2.*]
   pull_request:
     branches: [master]
 
@@ -20,6 +21,10 @@ jobs:
           - os: windows-latest
             python-version: pypy3
 
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: ${{ matrix.python-version }}
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -30,16 +35,16 @@ jobs:
         run: pip install .[test]
 
       - name: Run tests
-        run: true
-      #   run: make ci-test
+        run: make ci-test
 
-      # - name: Upload coverage to Codecov
-      #   uses: codecov/codecov-action@v1
-      #   with:
-      #     fail_ci_if_error: true
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          env_vars: PYTHON,OS
+          fail_ci_if_error: true
 
-  dev-release:
-    name: Publish TestPyPI Distributions
+  release:
+    name: Publish Release
     needs: test
     runs-on: ubuntu-latest
 
@@ -61,9 +66,17 @@ jobs:
       - name: Check distributions
         run: twine check dist/*
 
-      - name: Publish distributions
+      - name: Publish TestPyPI distributions
+        if: startsWith(github.event.ref, 'refs/heads') || contains(github.event.ref, 'rc')
         uses: pypa/gh-action-pypi-publish@master
         with:
           user: __token__
           password: ${{ secrets.TESTPYPI }}
           repository_url: https://test.pypi.org/legacy/
+
+      - name: Publish PyPI distributions
+        if: startsWith(github.event.ref, 'refs/tags') && !contains(github.event.ref, 'rc')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI }}
