@@ -38,8 +38,8 @@ jobs:
       #   with:
       #     fail_ci_if_error: true
 
-  dev-releases:
-    name: Publish TestPyPI Releases
+  dev-release:
+    name: Publish TestPyPI Distributions
     needs: test
     runs-on: ubuntu-latest
 
@@ -55,21 +55,18 @@ jobs:
       - name: Prepare build dependencies
         run: pip install -U pip setuptools pep517 twine
 
-      - name: Set test-release-specific release name
-        run: sed -i 's/"py-fast-trie"/"py-fast-trie-mischif"/' setup.py
-
-      - name: Build packages
+      - name: Build distributions
         run: make build
 
-  #     - name: Check packages
-  #       run: twine check dist/
+      - name: Check distributions
+        run: twine check dist/*
 
-  #     - name: Publish test packages
-  #       uses: pypa/gh-action-pypi-publish@v1
-  #       with:
-  #         user: __token__
-  #         password: ${{ secrets.test_pypi_password }}
-  #         repository_url: https://test.pypi.org/legacy/
+      - name: Publish distributions
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.TESTPYPI }}
+          repository_url: https://test.pypi.org/legacy/
 
   #     - name: Publish main packages
   #       if: startsWith(github.event.ref, 'refs/tags')
