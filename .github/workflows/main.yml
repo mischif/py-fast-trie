@@ -34,13 +34,14 @@ jobs:
         run: pip install .[test]
 
       - name: Run tests
-        run: make ci-test
+        run: true
+      #   run: make ci-test
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          # env_vars: PYTHON,OS
-          fail_ci_if_error: true
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v1
+      #   with:
+      #     # env_vars: PYTHON,OS
+      #     fail_ci_if_error: true
 
   release:
     name: Publish Release
@@ -57,7 +58,7 @@ jobs:
         run: git fetch --prune --unshallow --tags
 
       - name: Prepare build dependencies
-        run: pip install -U pip setuptools pep517 twine
+        run: pip install -U pep517 twine setuptools
 
       - name: Build distributions
         run: make build
@@ -69,22 +70,18 @@ jobs:
         run: twine check dist/*
 
       - name: Publish TestPyPI distributions
-        if: >-
-          github.event_name == 'push'
-          && (contains(env.version, 'rc')
-          || contains(env.version, 'dev'))
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          user: __token__
-          password: ${{ secrets.TESTPYPI }}
-          repository_url: https://test.pypi.org/legacy/
+        if: contains(env.version, 'rc') || contains(env.version, 'dev')
+        run: echo Uploading ${{ env.version }} to testpypi
+        # uses: pypa/gh-action-pypi-publish@master
+        # with:
+        #   user: __token__
+        #   password: ${{ secrets.TESTPYPI }}
+        #   repository_url: https://test.pypi.org/legacy/
 
       - name: Publish PyPI distributions
-        if: >-
-          github.event_name == 'push'
-          && !contains(env.version, 'rc')
-          && !contains(env.version, 'dev')
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI }}
+        if: (!contains(env.version, 'rc') && !contains(env.version, 'dev'))
+        run: echo Uploading ${{ env.version }} to pypi
+        # uses: pypa/gh-action-pypi-publish@master
+        # with:
+        #   user: __token__
+        #   password: ${{ secrets.PYPI }}
