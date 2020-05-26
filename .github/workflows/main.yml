@@ -3,7 +3,6 @@ name: CI/CD
 on:
   push:
     branches: [master]
-    tags: [1.*, 2.*]
   pull_request:
     branches: [master]
 
@@ -63,11 +62,17 @@ jobs:
       - name: Build distributions
         run: make build
 
+      - name: Get release version
+        run: echo "::set-env name=version::$(python setup.py --version)"
+
       - name: Check distributions
         run: twine check dist/*
 
       - name: Publish TestPyPI distributions
-        if: startsWith(github.event.ref, 'refs/heads') || contains(github.event.ref, 'rc')
+        if: >-
+          github.event_name == 'push'
+          && (contains(env.version, 'rc')
+          || contains(env.version, 'dev'))
         uses: pypa/gh-action-pypi-publish@master
         with:
           user: __token__
@@ -75,7 +80,10 @@ jobs:
           repository_url: https://test.pypi.org/legacy/
 
       - name: Publish PyPI distributions
-        if: startsWith(github.event.ref, 'refs/tags') && !contains(github.event.ref, 'rc')
+        if: >-
+          github.event_name == 'push'
+          && !contains(env.version, 'rc')
+          && !contains(env.version, 'dev')
         uses: pypa/gh-action-pypi-publish@master
         with:
           user: __token__
