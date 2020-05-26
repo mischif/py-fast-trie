@@ -57,22 +57,21 @@ jobs:
         run: git fetch --prune --unshallow --tags
 
       - name: Prepare build dependencies
-        run: pip install -U pip setuptools pep517 twine
+        run: pip install -U pep517 twine setuptools
 
       - name: Build distributions
         run: make build
 
       - name: Get release version
-        run: echo "::set-env name=version::$(python setup.py --version)"
+        run: |
+          echo "::set-env name=version::$(python setup.py --version)"
+          echo release version is $(python setup.py --version)
 
       - name: Check distributions
         run: twine check dist/*
 
       - name: Publish TestPyPI distributions
-        if: >-
-          github.event_name == 'push'
-          && (contains(env.version, 'rc')
-          || contains(env.version, 'dev'))
+        if: contains(env.version, 'rc') || contains(env.version, 'dev')
         uses: pypa/gh-action-pypi-publish@master
         with:
           user: __token__
@@ -80,10 +79,7 @@ jobs:
           repository_url: https://test.pypi.org/legacy/
 
       - name: Publish PyPI distributions
-        if: >-
-          github.event_name == 'push'
-          && !contains(env.version, 'rc')
-          && !contains(env.version, 'dev')
+        if: (!contains(env.version, 'rc') && !contains(env.version, 'dev'))
         uses: pypa/gh-action-pypi-publish@master
         with:
           user: __token__
