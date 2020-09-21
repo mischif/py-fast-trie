@@ -7,8 +7,6 @@
 #       Released under version 3.0 of the Non-Profit Open Source License       #
 ################################################################################
 
-from __future__ import division
-
 from sys import maxsize
 
 from sortedcontainers import SortedList
@@ -180,7 +178,7 @@ class YFastTrie(object):
 
 		# subtree should be None only if the trie is empty
 		if subtree is None and self._count == 0:
-			raise ValueError(u"No values exist in trie")
+			raise ValueError("No values exist in trie")
 		elif value <= self._min or self._min is None:
 			return None
 		elif value > self._max:
@@ -202,7 +200,7 @@ class YFastTrie(object):
 
 		# There should be no subtree only if the given value is not in the trie
 		if subtree is None or value not in subtree:
-			raise ValueError(u"Value does not exist in trie")
+			raise ValueError("Value does not exist in trie")
 
 		if self._min == value:
 			if len(subtree) > 1:
@@ -270,7 +268,7 @@ class YFastTrie(object):
 
 		# subtree should be None only if the trie is empty
 		if subtree is None and self._count == 0:
-			raise ValueError(u"No values exist in trie")
+			raise ValueError("No values exist in trie")
 		elif value >= self._max or self._max is None:
 			return None
 		elif value < self._min:

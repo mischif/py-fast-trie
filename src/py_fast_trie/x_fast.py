@@ -7,17 +7,10 @@
 #       Released under version 3.0 of the Non-Profit Open Source License       #
 ################################################################################
 
-from __future__ import division
-
 from numbers import Integral
 from sys import maxsize
 
 from py_hopscotch_dict import HopscotchDict
-
-try:
-	from future_builtins import map
-except ImportError:
-	pass
 
 
 class TrieNode(object):
@@ -152,21 +145,21 @@ class XFastTrie(object):
 		"""
 		if isinstance(value, Integral):
 			if value.bit_length() > length:
-				raise ValueError(u"Value is too big to be stored in trie")
+				raise ValueError("Value is too big to be stored in trie")
 			elif value < 0:
-				raise ValueError(u"Negative values cannot be stored in trie")
+				raise ValueError("Negative values cannot be stored in trie")
 			else:
 				return value
 
 		elif isinstance(value, bytes):
 			if len(value) * 8 > length:
-				raise ValueError(u"Value is too big to be stored in trie")
+				raise ValueError("Value is too big to be stored in trie")
 
 			else:
 				return sum(map(lambda t: t[1] << 8 * t[0], enumerate(reversed(value))))
 
 		else:
-			raise TypeError(u"Only integers and byte sequences can be stored in trie")
+			raise TypeError("Only integers and byte sequences can be stored in trie")
 
 	def _get_closest_ancestor(self, value):
 		"""
@@ -356,7 +349,7 @@ class XFastTrie(object):
 		# But if it could also happen because of some unconsidered edge case,
 		# make some noise so the edge case can be fixed
 		if node is None:
-			raise ValueError(u"No values exist in trie")
+			raise ValueError("No values exist in trie")
 		else:
 			return node.pred if node.value >= value else node
 
@@ -370,7 +363,7 @@ class XFastTrie(object):
 
 		# Error when trying to remove a value that hasn't been added
 		if value not in self._level_tables[-1]:
-			raise ValueError(u"Value does not exist in trie")
+			raise ValueError("Value does not exist in trie")
 		else:
 			node = self._level_tables[-1][value]
 			leaf_pred = node.pred
@@ -455,7 +448,7 @@ class XFastTrie(object):
 		# But if it could also happen because of some unconsidered edge case,
 		# make some noise so the edge case can be fixed
 		if node is None:
-			raise ValueError(u"No values exist in trie")
+			raise ValueError("No values exist in trie")
 		else:
 			return node.succ if node.value <= value else node
 
