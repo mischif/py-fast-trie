@@ -7,12 +7,45 @@
 
 [build-system]
 build-backend = "setuptools.build_meta"
-
 requires = [
 	"setuptools >= 43.0.0",
-	"setuptools_scm[toml] >= 3.4",
+	"setuptools_scm[toml] >= 3.4.1",
 	"wheel",
 	]
+
+# Putting mypy config here as a hack since mypy maintainers don't want to
+# officially support pyproject.toml
+# See python/mypy#5205
+[mypy]
+pretty = true
+python_version = 3.6
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+implicit_reexport = false
+no_implicit_optional = true
+strict_optional = true
+strict_equality = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
+allow_redefinition = false
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+skip_empty = true
+
+[tool.pytest.ini_options]
+addopts = "-v -s --lf --cov=py_fast_trie --cov-report term"
+testpaths = ["test"]
 
 [tool.setuptools_scm]
 local_scheme = "no-local-version"

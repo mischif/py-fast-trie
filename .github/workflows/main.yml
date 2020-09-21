@@ -60,7 +60,7 @@ jobs:
         run: pip install -U pep517 twine setuptools
 
       - name: Build distributions
-        run: make build
+        run: make release
 
       - name: Get release version
         run: |

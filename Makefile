@@ -7,9 +7,7 @@
 
 .POSIX:
 
-CI_OPTIONS="--cov-report xml --hypothesis-profile ci"
-
-.PHONY: test ci-test build
+.PHONY: ci-test clean release test
 
 clean:
 	rm -rf .coverage coverage.xml .eggs/ .hypothesis/ .pytest_cache/ *egg-info/ dist/ build/
@@ -17,10 +15,10 @@ clean:
 	find . -name *.pyc -exec rm -rf {} +
 
 test:
-	python -B setup.py test
+	pytest
 
 ci-test:
-	python setup.py test --addopts ${CI_OPTIONS}
+	pytest --cov-report xml --hypothesis-profile ci
 
-build:
+release:
 	python -m pep517.build -sb .
