@@ -7,10 +7,10 @@
 
 .POSIX:
 
-.PHONY: ci-test clean release test
+.PHONY: ci-test clean release test typecheck
 
 clean:
-	rm -rf .coverage coverage.xml .eggs/ .hypothesis/ .pytest_cache/ *egg-info/ dist/ build/
+	rm -rf .coverage coverage.xml .eggs/ .hypothesis/ .mypy_cache/ .pytest_cache/ *egg-info/ dist/ build/
 	find . -name __pycache__ -exec rm -rf {} +
 	find . -name *.pyc -exec rm -rf {} +
 
@@ -22,3 +22,6 @@ ci-test:
 
 release:
 	python -m pep517.build -sb .
+
+typecheck:
+	mypy --config-file pyproject.toml src/

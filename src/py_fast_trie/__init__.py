@@ -10,8 +10,8 @@
 from io import open
 from os.path import abspath, dirname, join
 
-from py_fast_trie.x_fast import XFastTrie
-from py_fast_trie.y_fast import YFastTrie
+from py_fast_trie.x_fast import XFastTrie as XFastTrie
+from py_fast_trie.y_fast import YFastTrie as YFastTrie
 
 module_root = dirname(abspath(__file__))
 

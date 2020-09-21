@@ -7,14 +7,20 @@
 #       Released under version 3.0 of the Non-Profit Open Source License       #
 ################################################################################
 
-from numbers import Integral
 from sys import maxsize
+from typing import (cast,
+					Iterable,
+					List,
+					Optional,
+					Tuple,
+					Union,
+					)
 
 from py_hopscotch_dict import HopscotchDict
 
 
 class TrieNode(object):
-	def _get_leaf(self):
+	def _get_leaf(self) -> bool:
 		"""
 		Indicated whether or not the node is a leaf
 
@@ -22,7 +28,7 @@ class TrieNode(object):
 		"""
 		return self._leaf
 
-	def _get_left(self):
+	def _get_left(self) -> Optional["TrieNode"]:
 		"""
 		The left child of the current node -
 		its predecessor if the current node is a leaf,
@@ -34,7 +40,7 @@ class TrieNode(object):
 		"""
 		return self._left
 
-	def _get_parent(self):
+	def _get_parent(self) -> Optional["TrieNode"]:
 		"""
 		The parent of the current node
 
@@ -43,7 +49,7 @@ class TrieNode(object):
 		"""
 		return self._parent
 
-	def _get_right(self):
+	def _get_right(self) -> Optional["TrieNode"]:
 		"""
 		The right child of the current node -
 		its successor if the current node is a leaf,
@@ -55,7 +61,7 @@ class TrieNode(object):
 		"""
 		return self._right
 
-	def _get_value(self):
+	def _get_value(self) -> Optional[int]:
 		"""
 		The value of the current node, expressed as an integer
 
@@ -63,7 +69,7 @@ class TrieNode(object):
 		"""
 		return self._value
 
-	def _get_value_bitstring(self):
+	def _get_value_bitstring(self) -> str:
 		"""
 		The value of the current node, expressed as a string of 1s and 0s
 
@@ -78,7 +84,7 @@ class TrieNode(object):
 
 		return "".join(reversed(result))
 
-	def _set_left(self, new_left):
+	def _set_left(self, new_left: Optional["TrieNode"]) -> None:
 		"""
 		Sets the left child of the current node
 
@@ -86,7 +92,7 @@ class TrieNode(object):
 		"""
 		self._left = new_left
 
-	def _set_parent(self, new_parent):
+	def _set_parent(self, new_parent: Optional["TrieNode"]) -> None:
 		"""
 		Sets the parent of the current node
 
@@ -94,7 +100,7 @@ class TrieNode(object):
 		"""
 		self._parent = new_parent
 
-	def _set_right(self, new_right):
+	def _set_right(self, new_right: Optional["TrieNode"]) -> None:
 		"""
 		Sets the left child of the current node
 
@@ -111,20 +117,24 @@ class TrieNode(object):
 	pred = property(_get_left, _set_left)
 	succ = property(_get_right, _set_right)
 
-	def __init__(self, value, leaf, left=None, right=None):
+	def __init__(self,
+				 value: Optional[int],
+				 leaf: bool,
+				 left: Optional["TrieNode"]=None,
+				 right: Optional["TrieNode"]=None) -> None:
 		self._leaf = leaf
 		self._value = value
 		self._left = left
 		self._right = right
 		self._parent = None
 
-	def __str__(self):
+	def __str__(self) -> str:
 		return "Root" if self._value is None else str(self._value)
 
 
 class XFastTrie(object):
 	@staticmethod
-	def _make_level_tables(levels):
+	def _make_level_tables(levels: int) -> List[HopscotchDict]:
 		"""
 		Creates the dicts used when searching for a value in the trie
 
@@ -134,7 +144,8 @@ class XFastTrie(object):
 		return [HopscotchDict() for _ in range(levels)]
 
 	@staticmethod
-	def _to_int(value, length):
+	def _to_int(value: Union[int, bytes],
+				length: int) -> int:
 		"""
 		Confirm the desired value could be contained in the table,
 		then perform any necessary conversions to the canonical value format
@@ -143,7 +154,7 @@ class XFastTrie(object):
 		:param length: The maximum bit length of a value in the trie
 		:return: (int) The value converted to an int
 		"""
-		if isinstance(value, Integral):
+		if isinstance(value, int):
 			if value.bit_length() > length:
 				raise ValueError("Value is too big to be stored in trie")
 			elif value < 0:
@@ -161,7 +172,17 @@ class XFastTrie(object):
 		else:
 			raise TypeError("Only integers and byte sequences can be stored in trie")
 
-	def _get_closest_ancestor(self, value):
+	def clear(self) -> None:
+		"""
+		Empty the trie of all values
+		"""
+		self._count = 0
+		self._level_tables = self._make_level_tables(self._maxlen)
+		self._min: Optional["TrieNode"] = None
+		self._max: Optional["TrieNode"] = None
+		self._root = TrieNode(None, False)
+
+	def _get_closest_ancestor(self, value: int) -> Tuple[TrieNode, int]:
 		"""
 		Find the node in the trie with the longest prefix that matches the given value
 
@@ -188,7 +209,7 @@ class XFastTrie(object):
 
 		return (result, result_level)
 
-	def _get_closest_leaf(self, value):
+	def _get_closest_leaf(self, value: int) -> Optional["TrieNode"]:
 		"""
 		Find the leaf in the trie with the value closest to the given value
 
@@ -219,17 +240,7 @@ class XFastTrie(object):
 					result = candidate
 		return result
 
-	def clear(self):
-		"""
-		Empty the trie of all values
-		"""
-		self._level_tables = self._make_level_tables(self._maxlen)
-		self._root = TrieNode(None, False)
-		self._count = 0
-		self._min = None
-		self._max = None
-
-	def insert(self, value):
+	def insert(self, value: Union[int, bytes]) -> None:
 		"""
 		Add the given value to the trie
 
@@ -255,10 +266,10 @@ class XFastTrie(object):
 			leaf_succ.pred = leaf_node
 
 		# Update global min/max pointers as necessary
-		if self._min is None or value < self._min.value:
+		if self._min is None or value < cast(int, self._min.value):
 			self._min = leaf_node
 
-		if self._max is None or value > self._max.value:
+		if self._max is None or value > cast(int, self._max.value):
 			self._max = leaf_node
 
 		# Walk up the trie from the leaf node, creating internal nodes as necessary
@@ -270,7 +281,7 @@ class XFastTrie(object):
 			if node is None:
 				# Determine which leg the last node inserted into the trie was on relative the one to be created,
 				# and find the corresponding leaf to use for the descendant pointer
-				last_inserted_leg = last_inserted.value & 1
+				last_inserted_leg = cast(int, last_inserted.value) & 1
 				descendant_direction = "right" if last_inserted_leg == 0 else "left"
 				descendant = last_inserted
 				while not descendant.leaf:
@@ -334,7 +345,7 @@ class XFastTrie(object):
 
 		self._count += 1
 
-	def predecessor(self, value):
+	def predecessor(self, value: int) -> Optional["TrieNode"]:
 		"""
 		Find the largest value in the trie strictly less than the given value
 
@@ -353,7 +364,7 @@ class XFastTrie(object):
 		else:
 			return node.pred if node.value >= value else node
 
-	def remove(self, value):
+	def remove(self, value: Union[int, bytes]) -> None:
 		"""
 		Remove the given value from the trie
 
@@ -433,7 +444,7 @@ class XFastTrie(object):
 
 		self._count -= 1
 
-	def successor(self, value):
+	def successor(self, value: int) -> Optional["TrieNode"]:
 		"""
 		Find the smallest value in the trie strictly greater than the given value
 
@@ -453,17 +464,17 @@ class XFastTrie(object):
 			return node.succ if node.value <= value else node
 
 	@property
-	def max(self):
+	def max(self) -> Optional[int]:
 		"""
 		The maximum value in the trie
 
 		:return: (int) The maximum value in the trie,
 					   or None if the trie is empty
 		"""
-		return self._max.value
+		return self._max.value if self._max is not None else self._max
 
 	@property
-	def max_node(self):
+	def max_node(self) -> Optional["TrieNode"]:
 		"""
 		The node related to the maximum value in the trie
 
@@ -473,17 +484,17 @@ class XFastTrie(object):
 		return self._max
 
 	@property
-	def min(self):
+	def min(self) -> Optional[int]:
 		"""
 		The minimum value in the trie
 
 		:return: (int) The minimum value in the trie,
 					   or None if the trie is empty
 		"""
-		return self._min.value
+		return self._min.value if self._min is not None else self._min
 
 	@property
-	def min_node(self):
+	def min_node(self) -> Optional["TrieNode"]:
 		"""
 		The node related to the minimum value in the trie
 
@@ -492,39 +503,40 @@ class XFastTrie(object):
 		"""
 		return self._min
 
-	def __init__(self, max_length=(maxsize.bit_length() + 1)):
+	def __init__(self,
+				 max_length: int=(maxsize.bit_length() + 1)) -> None:
 		self._maxlen = max_length
 		self.clear()
 
-	def __contains__(self, value):
+	def __contains__(self, value: Union[int, bytes]) -> bool:
 		value = self._to_int(value, self._maxlen)
 		return value in self._level_tables[-1]
 
-	def __gt__(self, value):
+	def __gt__(self, value: Union[int, bytes]) -> Optional[int]:
 		value = self._to_int(value, self._maxlen)
 		result = self.successor(value)
 		return result.value if result is not None else result
 
-	def __iadd__(self, value):
+	def __iadd__(self, value: Union[int, bytes]) -> "XFastTrie":
 		value = self._to_int(value, self._maxlen)
 		self.insert(value)
 		return self
 
-	def __isub__(self, value):
+	def __isub__(self, value: Union[int, bytes]) -> "XFastTrie":
 		value = self._to_int(value, self._maxlen)
 		self.remove(value)
 		return self
 
-	def __iter__(self):
+	def __iter__(self) -> Iterable[int]:
 		node = self._min
 		while node is not None:
-			yield node.value
+			yield cast(int, node.value)
 			node = node.succ
 
-	def __len__(self):
+	def __len__(self) -> int:
 		return self._count
 
-	def __lt__(self, value):
+	def __lt__(self, value: Union[int, bytes]) -> Optional[int]:
 		value = self._to_int(value, self._maxlen)
 		result = self.predecessor(value)
 		return result.value if result is not None else result

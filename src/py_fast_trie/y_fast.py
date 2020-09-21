@@ -8,16 +8,23 @@
 ################################################################################
 
 from sys import maxsize
+from typing import (cast,
+					Iterable,
+					Optional,
+					Tuple,
+					Union,
+					)
 
-from sortedcontainers import SortedList
+from py_hopscotch_dict import HopscotchDict
+from sortedcontainers import SortedList							  # type: ignore
 
 from py_fast_trie import XFastTrie
-from py_hopscotch_dict import HopscotchDict
+from py_fast_trie.x_fast import TrieNode
 
 class YFastTrie(object):
 
 	@staticmethod
-	def _calculate_representative(value, max_length):
+	def _calculate_representative(value: int, max_length: int) -> int:
 		"""
 		Calculate the smallest value that would exist in _partitions
 		the given value could belong to
@@ -27,10 +34,13 @@ class YFastTrie(object):
 
 		:return: (int) The closest possible representative to the given number
 		"""
-		return min(max_length * (value // max_length) + (-1 % max_length), 2 ** max_length - 1)
+		result = min(max_length * (value // max_length) + (-1 % max_length), 2 ** max_length - 1)
+		return cast(int, result)
 
 	@staticmethod
-	def _merge_subtrees(left_tree, right_tree, max_size):
+	def _merge_subtrees(left_tree: SortedList,
+						right_tree: SortedList,
+						max_size: int) -> Tuple[SortedList, Optional[SortedList]]:
 		"""
 		Combine the elements of two trees into one larger tree,
 		splitting them again if the larger tree exceeds a given size
@@ -73,7 +83,7 @@ class YFastTrie(object):
 		return result
 
 	@staticmethod
-	def _split_subtree(tree, max_length):
+	def _split_subtree(tree: SortedList, max_length: int) -> Tuple[SortedList, SortedList]:
 		"""
 		Split a tree by its median element into two smaller trees
 
@@ -85,7 +95,19 @@ class YFastTrie(object):
 		median = tree.bisect_right(YFastTrie._calculate_representative(tree[len(tree) // 2], max_length))
 		return SortedList(tree.islice(stop=median)), SortedList(tree.islice(start=median))
 
-	def _get_value_subtree(self, value, create_subtree=False):
+	def clear(self) -> None:
+		"""
+		Remove all values from the trie and return it to its starting state
+		"""
+		self._count = 0
+		self._max: Optional[int] = None
+		self._min: Optional[int] = None
+		self._partitions = XFastTrie(self._maxlen)
+		self._subtrees = HopscotchDict()
+
+	def _get_value_subtree(self,
+						   value: int,
+						   create_subtree: bool=False) -> Tuple[Optional[SortedList], Optional["TrieNode"]]:
 		"""
 		Find the subtree that would hold the given value
 
@@ -99,7 +121,7 @@ class YFastTrie(object):
 
 		if self._count == 0:
 			rep_node = None
-		elif value <= self._min or self._min is None:
+		elif value <= cast(int, self._min) or self._min is None:
 			rep_node = self._partitions.min_node
 		else:
 			# As the X-fast trie looks for strict successors,
@@ -122,17 +144,7 @@ class YFastTrie(object):
 
 		return (result, rep_node)
 
-	def clear(self):
-		"""
-		Remove all values from the trie and return it to its starting state
-		"""
-		self._count = 0
-		self._max = None
-		self._min = None
-		self._partitions = XFastTrie(self._maxlen)
-		self._subtrees = HopscotchDict()
-
-	def insert(self, value):
+	def insert(self, value: Union[int, bytes]) -> None:
 		"""
 		Insert a value into the trie
 
@@ -140,6 +152,8 @@ class YFastTrie(object):
 		"""
 		value = XFastTrie._to_int(value, self._maxlen)
 		subtree, rep_node = self._get_value_subtree(value, True)
+		subtree = cast(SortedList, subtree)
+		rep_node = cast(TrieNode, rep_node)
 		# Do nothing if the value is already in the trie
 		if value in subtree:
 			return
@@ -165,7 +179,7 @@ class YFastTrie(object):
 
 		self._count += 1
 
-	def predecessor(self, value):
+	def predecessor(self, value: Union[int, bytes]) -> Optional[int]:
 		"""
 		Find the largest value in the trie strictly less than the given value,
 		if it exists
@@ -179,17 +193,19 @@ class YFastTrie(object):
 		# subtree should be None only if the trie is empty
 		if subtree is None and self._count == 0:
 			raise ValueError("No values exist in trie")
-		elif value <= self._min or self._min is None:
+		elif value <= cast(int, self._min) or self._min is None:
 			return None
-		elif value > self._max:
+		elif value > cast(int, self._max):
 			return self._max
 
+		subtree = cast(SortedList, subtree)
+		rep_node = cast(TrieNode, rep_node)
 		if min(subtree) >= value:
 			subtree = self._subtrees[rep_node.pred.value]
 
-		return subtree[subtree.bisect_left(value) - 1]
+		return cast(int, subtree[subtree.bisect_left(value) - 1])
 
-	def remove(self, value):
+	def remove(self, value: Union[int, bytes]) -> None:
 		"""
 		Remove the given value from the trie
 
@@ -202,6 +218,8 @@ class YFastTrie(object):
 		if subtree is None or value not in subtree:
 			raise ValueError("Value does not exist in trie")
 
+		subtree = cast(SortedList, subtree)
+		rep_node = cast(TrieNode, rep_node)
 		if self._min == value:
 			if len(subtree) > 1:
 				min_succ = subtree[1]
@@ -248,6 +266,7 @@ class YFastTrie(object):
 			self._partitions -= right_rep.value
 
 			# In with the new
+			tree: SortedList
 			for tree in filter(None, self._merge_subtrees(left_tree, right_tree, 2 * self._maxlen)):
 				rep = self._calculate_representative(max(tree), self._maxlen)
 				self._partitions += rep
@@ -255,7 +274,7 @@ class YFastTrie(object):
 
 		self._count -= 1
 
-	def successor(self, value):
+	def successor(self, value: Union[int, bytes]) -> Optional[int]:
 		"""
 		Find the smallest value in the trie strictly greater than the given value,
 		if it exists
@@ -269,18 +288,20 @@ class YFastTrie(object):
 		# subtree should be None only if the trie is empty
 		if subtree is None and self._count == 0:
 			raise ValueError("No values exist in trie")
-		elif value >= self._max or self._max is None:
+		elif value >= cast(int, self._max) or self._max is None:
 			return None
-		elif value < self._min:
+		elif value < cast(int, self._min):
 			return self._min
 
+		subtree = cast(SortedList, subtree)
+		rep_node = cast(TrieNode, rep_node)
 		if max(subtree) <= value:
 			subtree = self._subtrees[rep_node.succ.value]
 
-		return subtree[subtree.bisect_right(value)]
+		return cast(int, subtree[subtree.bisect_right(value)])
 
 	@property
-	def max(self):
+	def max(self) -> Optional[int]:
 		"""
 		The maximum value in the trie
 
@@ -290,7 +311,7 @@ class YFastTrie(object):
 		return self._max
 
 	@property
-	def min(self):
+	def min(self) -> Optional[int]:
 		"""
 		The minimum value in the trie
 
@@ -299,39 +320,40 @@ class YFastTrie(object):
 		"""
 		return self._min
 
-	def __init__(self, max_length=(maxsize.bit_length() + 1)):
+	def __init__(self,
+				 max_length: int=(maxsize.bit_length() + 1)):
 		self._maxlen = max_length
 		self._min_subtree_size = max_length // 2
 		self._max_subtree_size = max_length * 2
 		self.clear()
 
-	def __contains__(self, value):
+	def __contains__(self, value: Union[int, bytes]) -> bool:
 		value = XFastTrie._to_int(value, self._maxlen)
 		subtree, _ = self._get_value_subtree(value)
 		return subtree is not None and value in subtree
 
-	def __gt__(self, value):
+	def __gt__(self, value: Union[int, bytes]) -> Optional[int]:
 		value = XFastTrie._to_int(value, self._maxlen)
 		return self.successor(value)
 
-	def __iadd__(self, value):
+	def __iadd__(self, value: Union[int, bytes]) -> "YFastTrie":
 		value = XFastTrie._to_int(value, self._maxlen)
 		self.insert(value)
 		return self
 
-	def __isub__(self, value):
+	def __isub__(self, value: Union[int, bytes]) -> "YFastTrie":
 		value = XFastTrie._to_int(value, self._maxlen)
 		self.remove(value)
 		return self
 
-	def __iter__(self):
+	def __iter__(self) -> Iterable[int]:
 		for rep in sorted(self._subtrees):
 			for value in self._subtrees[rep]:
 				yield value
 
-	def __len__(self):
+	def __len__(self) -> int:
 		return self._count
 
-	def __lt__(self, value):
+	def __lt__(self, value: Union[int, bytes]) -> Optional[int]:
 		value = XFastTrie._to_int(value, self._maxlen)
 		return self.predecessor(value)
