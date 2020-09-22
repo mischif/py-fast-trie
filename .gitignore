@@ -10,6 +10,12 @@ __pycache__/
 
 # Test-related files
 .hypothesis/
+.mypy_cache/
 .pytest_cache/
 .coverage
 coverage.xml
+
+# Release-related files
+build/
+dist/
+src/py_hopscotch_dict/VERSION
