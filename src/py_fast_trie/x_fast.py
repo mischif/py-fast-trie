@@ -24,7 +24,7 @@ class TrieNode(object):
 		"""
 		Indicated whether or not the node is a leaf
 
-		:return: (bool) Whether or not the node is a leaf
+		:return: Whether or not the node is a leaf
 		"""
 		return self._leaf
 
@@ -35,8 +35,8 @@ class TrieNode(object):
 		its left child if the current node is an internal node with such,
 		a descendant pointer if the current node is an internal node with no child
 
-		:return: (TrieNode) The current node's left child,
-							None if the current node is the smallest leaf
+		:return: The current node's left child,
+				 None if the current node is the smallest leaf
 		"""
 		return self._left
 
@@ -44,8 +44,8 @@ class TrieNode(object):
 		"""
 		The parent of the current node
 
-		:return: (TrieNode) The current node's parent,
-							None if the current node is the root
+		:return: The current node's parent,
+				 None if the current node is the root
 		"""
 		return self._parent
 
@@ -56,8 +56,8 @@ class TrieNode(object):
 		its right child if the current node is an internal node with such,
 		a descendant pointer if the current node is an internal node with no child
 
-		:return: (TrieNode) The current node's right child,
-							None if the current node is the largest leaf
+		:return: The current node's right child,
+				 None if the current node is the largest leaf
 		"""
 		return self._right
 
@@ -65,7 +65,7 @@ class TrieNode(object):
 		"""
 		The value of the current node, expressed as an integer
 
-		:return: (int) The current node's value
+		:return: The current node's value
 		"""
 		return self._value
 
@@ -73,7 +73,7 @@ class TrieNode(object):
 		"""
 		The value of the current node, expressed as a string of 1s and 0s
 
-		:return: (str) The current node's value, as bits
+		:return: The current node's value, as bits
 		"""
 		node = self
 		result = []
@@ -88,7 +88,7 @@ class TrieNode(object):
 		"""
 		Sets the left child of the current node
 
-		:param new_left: (TrieNode) The current node's left child, or None
+		:param new_left: The current node's left child, or None
 		"""
 		self._left = new_left
 
@@ -96,7 +96,7 @@ class TrieNode(object):
 		"""
 		Sets the parent of the current node
 
-		:param new_parent: (TrieNode) The current node's parent, or None
+		:param new_parent: The current node's parent, or None
 		"""
 		self._parent = new_parent
 
@@ -104,7 +104,7 @@ class TrieNode(object):
 		"""
 		Sets the left child of the current node
 
-		:param new_right: (TrieNode) The current node's right child, or none
+		:param new_right: The current node's right child, or none
 		"""
 		self._right = new_right
 
@@ -138,8 +138,8 @@ class XFastTrie(object):
 		"""
 		Creates the dicts used when searching for a value in the trie
 
-		:param levels: (int) The number of levels in the trie
-		:return: (list) search structures for each level of the trie
+		:param levels: The number of levels in the trie
+		:return: Search structures for each level of the trie
 		"""
 		return [HopscotchDict() for _ in range(levels)]
 
@@ -150,9 +150,9 @@ class XFastTrie(object):
 		Confirm the desired value could be contained in the table,
 		then perform any necessary conversions to the canonical value format
 
-		:param value: (int/bytes) The value to be converted
+		:param value: The value to be converted
 		:param length: The maximum bit length of a value in the trie
-		:return: (int) The value converted to an int
+		:return: The value converted to an int
 		"""
 		if isinstance(value, int):
 			if value.bit_length() > length:
@@ -186,9 +186,9 @@ class XFastTrie(object):
 		"""
 		Find the node in the trie with the longest prefix that matches the given value
 
-		:param value: (int) The value to search for
-		:return: (TrieNode, int) The node with the longest prefix matching the given value,
-								 and its depth in the trie
+		:param value: The value to search for
+		:return: The node with the longest prefix matching the given value,
+				 and its depth in the trie
 		"""
 		result = self._root
 		result_level = -1
@@ -213,8 +213,8 @@ class XFastTrie(object):
 		"""
 		Find the leaf in the trie with the value closest to the given value
 
-		:param value: (int) The value to search for
-		:return: (TrieNode) The leaf with the closest value to the given value
+		:param value: The value to search for
+		:return: The leaf with the closest value to the given value
 		"""
 		result = None
 		ancestor, level = self._get_closest_ancestor(value)
@@ -244,7 +244,7 @@ class XFastTrie(object):
 		"""
 		Add the given value to the trie
 
-		:param value: (int/bytes) The value to add to the trie
+		:param value: The value to add to the trie
 		"""
 		value = self._to_int(value, self._maxlen)
 
@@ -349,9 +349,9 @@ class XFastTrie(object):
 		"""
 		Find the largest value in the trie strictly less than the given value
 
-		:param value: (int) The value to find the predecessor for
-		:return: (TrieNode) The leaf with the largest value strictly less than the given value,
-							or None if the value is at most the value of the smallest leaf
+		:param value: The value to find the predecessor for
+		:return: The leaf with the largest value strictly less than the given value,
+				 or None if the value is at most the value of the smallest leaf
 		"""
 		value = self._to_int(value, self._maxlen)
 		node = self._get_closest_leaf(value)
@@ -368,7 +368,7 @@ class XFastTrie(object):
 		"""
 		Remove the given value from the trie
 
-		:param value: (int/bytes) The value to remove from the trie
+		:param value: The value to remove from the trie
 		"""
 		value = self._to_int(value, self._maxlen)
 
@@ -448,9 +448,9 @@ class XFastTrie(object):
 		"""
 		Find the smallest value in the trie strictly greater than the given value
 
-		:param value: (int) The value to find the successor for
-		:return: (TrieNode) The leaf with the smallest value strictly greater than the given value,
-							or None if the value is at least the value of the largest leaf
+		:param value: The value to find the successor for
+		:return: The leaf with the smallest value strictly greater than the given value,
+				 or None if the value is at least the value of the largest leaf
 		"""
 		value = self._to_int(value, self._maxlen)
 		node = self._get_closest_leaf(value)
@@ -468,8 +468,8 @@ class XFastTrie(object):
 		"""
 		The maximum value in the trie
 
-		:return: (int) The maximum value in the trie,
-					   or None if the trie is empty
+		:return: The maximum value in the trie,
+				 or None if the trie is empty
 		"""
 		return self._max.value if self._max is not None else self._max
 
@@ -478,8 +478,8 @@ class XFastTrie(object):
 		"""
 		The node related to the maximum value in the trie
 
-		:return: (TrieNode) The maximum value in the trie,
-							or None if the trie is empty
+		:return: The maximum value in the trie,
+				 or None if the trie is empty
 		"""
 		return self._max
 
@@ -488,8 +488,8 @@ class XFastTrie(object):
 		"""
 		The minimum value in the trie
 
-		:return: (int) The minimum value in the trie,
-					   or None if the trie is empty
+		:return: The minimum value in the trie,
+				 or None if the trie is empty
 		"""
 		return self._min.value if self._min is not None else self._min
 
@@ -498,8 +498,8 @@ class XFastTrie(object):
 		"""
 		The node related to the minimum value in the trie
 
-		:return: (TrieNode) The minimum value in the trie,
-							or None if the trie is empty
+		:return: The minimum value in the trie,
+				 or None if the trie is empty
 		"""
 		return self._min
 

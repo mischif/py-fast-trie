@@ -32,7 +32,7 @@ class YFastTrie(object):
 		:param val: The value to calculate the representative for
 		:param max_length: The bit length of the largest possible representative
 
-		:return: (int) The closest possible representative to the given number
+		:return: The closest possible representative to the given number
 		"""
 		result = min(max_length * (value // max_length) + (-1 % max_length), 2 ** max_length - 1)
 		return cast(int, result)
@@ -48,9 +48,9 @@ class YFastTrie(object):
 		:param left_tree: Tree containing smaller elements
 		:param right_tree: Tree containing larger elements
 		:param max_size: Maximum size the combined tree can be before splitting
-		:return: (tuple) The combined tree and None if both trees' elements are
-						 less than max_size, the tree with the smaller elements
-						 and the tree with the larger elements otherwise
+		:return: The combined tree and None if both trees' elements are
+				 less than max_size, the tree with the smaller elements
+				 and the tree with the larger elements otherwise
 		"""
 		if len(left_tree) + len(right_tree) <= max_size:
 			left_tree.update(right_tree)
@@ -89,8 +89,8 @@ class YFastTrie(object):
 
 		:param tree: The tree to split
 		:param max_length: The size of the largest possible element in the trie in bits
-		:return: (tuple) The tree with the smaller elements,
-						 and the tree with the larger elements
+		:return: The tree with the smaller elements,
+				 and the tree with the larger elements
 		"""
 		median = tree.bisect_right(YFastTrie._calculate_representative(tree[len(tree) // 2], max_length))
 		return SortedList(tree.islice(stop=median)), SortedList(tree.islice(start=median))
@@ -114,8 +114,8 @@ class YFastTrie(object):
 		:param value: The value to find
 		:param create_subtree: If there is no subtree that would hold the given value,
 							   create one
-		:return: (tuple) The subtree that potentially holds the given value,
-						 and its corresponding representative
+		:return: The subtree that potentially holds the given value,
+				 and its corresponding representative
 		"""
 		result = None
 
@@ -185,7 +185,7 @@ class YFastTrie(object):
 		if it exists
 
 		:param value: The value to find the predecessor of
-		:return: (int) The predecessor of the given value, or None if it doesn't exist
+		:return: The predecessor of the given value, or None if it doesn't exist
 		"""
 		value = XFastTrie._to_int(value, self._maxlen)
 		subtree, rep_node = self._get_value_subtree(value)
@@ -280,7 +280,7 @@ class YFastTrie(object):
 		if it exists
 
 		:param value: The value to find the successor of
-		:return: (int) The successor of the given value, or None if it doesn't exist
+		:return: The successor of the given value, or None if it doesn't exist
 		"""
 		value = XFastTrie._to_int(value, self._maxlen)
 		subtree, rep_node = self._get_value_subtree(value)
@@ -305,8 +305,8 @@ class YFastTrie(object):
 		"""
 		The maximum value in the trie
 
-		:return: (int) The maximum value in the trie,
-					   or None if the trie is empty
+		:return: The maximum value in the trie,
+				 or None if the trie is empty
 		"""
 		return self._max
 
@@ -315,8 +315,8 @@ class YFastTrie(object):
 		"""
 		The minimum value in the trie
 
-		:return: (int) The minimum value in the trie,
-					   or None if the trie is empty
+		:return: The minimum value in the trie,
+				 or None if the trie is empty
 		"""
 		return self._min
 
